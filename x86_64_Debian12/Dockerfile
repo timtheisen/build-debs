@@ -1,6 +1,5 @@
-FROM ubuntu:focal
+FROM debian:bookworm
 
-# Add necessary build tools
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
     build-essential \
     devscripts \

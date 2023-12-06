@@ -1,4 +1,5 @@
 #!/bin/sh
+export DEBEMAIL=htcondor-admin@cs.wisc.edu
 DEBIAN_FRONTEND=noninteractive mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
 mkdir -p package
 (cd package; for i in ../*.tar.gz; do tar xfpz $i; done)
@@ -6,23 +7,22 @@ rm -rf package/*/debian
 mv debian package/*/
 cd package/*
 mv ../../*.tar.gz ..
-rm -f ../../*build-deps*.deb
+rm -f ../../*build-deps*
 dch --release --distribution stable ignored
-if $(grep -qi stretch /etc/os-release); then
-    dpkg-buildpackage -uc -us
-elif $(grep -qi buster /etc/os-release); then
-    dch --distribution stable --bin-nmu 'place holder entry'
-    dpkg-buildpackage --build=binary -uc -us
-elif $(grep -qi bullseye /etc/os-release); then
-    dch --distribution stable --bin-nmu 'place holder entry'
-    dch --distribution stable --bin-nmu 'place holder entry'
-    dpkg-buildpackage --build=binary -uc -us
-elif $(grep -qi bionic /etc/os-release); then
-    dpkg-buildpackage -uc -us
-elif $(grep -qi focal /etc/os-release); then
-    dch --distribution stable --bin-nmu 'place holder entry'
-    dpkg-buildpackage --build=binary -uc -us
+. /etc/os-release
+if [ "$VERSION_CODENAME" = 'bullseye' ]; then
+    true
+elif [ "$VERSION_CODENAME" = 'bookworm' ]; then
+    dch --distribution stable --nmu 'place holder entry'
+elif [ "$VERSION_CODENAME" = 'focal' ]; then
+    true
+elif [ "$VERSION_CODENAME" = 'jammy' ]; then
+    dch --distribution stable --nmu 'place holder entry'
+else
+    echo ERROR: Unknown codename "${VERSION_CODENAME}"
+    exit 1
 fi
+dpkg-buildpackage -uc -us
 ret=$?
 cd ..
 cp -p * ..

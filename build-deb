@@ -1,0 +1,31 @@
+#!/bin/sh
+DEBIAN_FRONTEND=noninteractive mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
+mkdir -p package
+(cd package; for i in ../*.tar.gz; do tar xfpz $i; done)
+rm -rf package/*/debian
+mv debian package/*/
+cd package/*
+mv ../../*.tar.gz ..
+rm -f ../../*build-deps*.deb
+dch --release --distribution stable ignored
+if $(grep -qi stretch /etc/os-release); then
+    dpkg-buildpackage -uc -us
+elif $(grep -qi buster /etc/os-release); then
+    dch --distribution stable --bin-nmu 'place holder entry'
+    dpkg-buildpackage --build=binary -uc -us
+elif $(grep -qi bullseye /etc/os-release); then
+    dch --distribution stable --bin-nmu 'place holder entry'
+    dch --distribution stable --bin-nmu 'place holder entry'
+    dpkg-buildpackage --build=binary -uc -us
+elif $(grep -qi bionic /etc/os-release); then
+    dpkg-buildpackage -uc -us
+elif $(grep -qi focal /etc/os-release); then
+    dch --distribution stable --bin-nmu 'place holder entry'
+    dpkg-buildpackage --build=binary -uc -us
+fi
+ret=$?
+cd ..
+cp -p * ..
+cd ..
+rm -rf package
+exit $ret

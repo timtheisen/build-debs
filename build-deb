@@ -18,6 +18,9 @@ elif [ "$VERSION_CODENAME" = 'focal' ]; then
     true
 elif [ "$VERSION_CODENAME" = 'jammy' ]; then
     dch --distribution stable --nmu 'place holder entry'
+elif [ "$VERSION_CODENAME" = 'noble' ]; then
+    dch --distribution stable --nmu 'place holder entry'
+    dch --distribution stable --nmu 'place holder entry'
 else
     echo ERROR: Unknown codename "${VERSION_CODENAME}"
     exit 1

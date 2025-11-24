@@ -9,7 +9,7 @@ cd package/*
 mv ../../*.tar.gz ..
 rm -f ../../*build-deps*
 dch --release --distribution stable ignored
-sed -i 1s/-[0-9]*/\&+SYS99/ debian/changelog
+sed -r -i '1s/-[0-9]+/&+SYS99/' debian/changelog
 . /etc/os-release
 if [ "$VERSION_CODENAME" = 'bullseye' ]; then
     SYS99='deb11'

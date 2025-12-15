@@ -15,6 +15,7 @@ progdir=$(dirname "$0")
 for arch in *_*; do
 
     if [ ! -d output/${arch} ]; then
+        echo "======= Working on $arch ======="
         platform="linux/${arch/_[^_]*/}"
         if ! docker image inspect ${image_name}:${arch} &>/dev/null; then
             docker build ${arch} --platform $platform --network=host --tag ${image_name}:${arch}
